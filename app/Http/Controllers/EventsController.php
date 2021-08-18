@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Workshop;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -97,6 +98,27 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
+        $query = Event::select('id','name','created_at','updated_at');
+        $events = $query->orderBy('id', 'ASC')->get()->toArray();
+        $workshopquery = Workshop::select('id','start','end','event_id','name','created_at','updated_at');
+        $workshops = $workshopquery->orderBy('id', 'ASC')->get()->toArray();
+        foreach ($workshops as $w){
+            foreach ($events as $key => $event){
+                if($w['event_id'] == $event['id']){
+                    $events[$key]['workshops'][]= $w;
+                }
+            }
+        }
+        $response = json_encode($events);
+        return $response;
+        throw new \Exception('implement in coding task 1');
+    }
+
+    public function getWarmUpEventsWithWorkshops() {
+        $query = Event::select('id','name','created_at','updated_at');
+        $events = $query->orderBy('id', 'ASC')->get()->toArray();
+        $response = json_encode($events);
+        return $response;
         throw new \Exception('implement in coding task 1');
     }
 
