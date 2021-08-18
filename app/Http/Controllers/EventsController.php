@@ -100,15 +100,21 @@ class EventsController extends BaseController
     public function getEventsWithWorkshops() {
         $query = Event::select('id','name','created_at','updated_at');
         $events = $query->orderBy('id', 'ASC')->get()->toArray();
-        $workshopquery = Workshop::select('id','start','end','event_id','name','created_at','updated_at');
-        $workshops = $workshopquery->orderBy('id', 'ASC')->get()->toArray();
-        foreach ($workshops as $w){
-            foreach ($events as $key => $event){
-                if($w['event_id'] == $event['id']){
-                    $events[$key]['workshops'][]= $w;
-                }
-            }
+        // $workshopquery = Workshop::select('id','start','end','event_id','name','created_at','updated_at');
+        // $workshops = $workshopquery->orderBy('id', 'ASC')->get()->toArray();
+        // foreach ($workshops as $w){
+        //     foreach ($events as $key => $event){
+        //         if($w['event_id'] == $event['id']){
+        //             $events[$key]['workshops'][]= $w;
+        //         }
+        //     }
+        // }
+        foreach ($events as $key => $event){
+            $workshopquery = Workshop::select('id','start','end','event_id','name','created_at','updated_at');
+            $w = $workshopquery->where('event_id','=',$event['id'])->get()->toArray();
+            $events[$key]['workshops']= $w;
         }
+        // dd($events);
         $response = json_encode($events);
         return $response;
         throw new \Exception('implement in coding task 1');
@@ -198,6 +204,16 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
+
+        $query = Event::select('id','name','created_at','updated_at');
+        $events = $query->where('id','>',1)->orderBy('id', 'ASC')->get()->toArray();
+        foreach ($events as $key => $event){
+            $workshopquery = Workshop::select('id','start','end','event_id','name','created_at','updated_at');
+            $w = $workshopquery->where('event_id','=',$event['id'])->get()->toArray();
+            $events[$key]['workshops']= $w;
+        }
+        $response = json_encode($events);
+        return $response;
         throw new \Exception('implement in coding task 2');
     }
 }
